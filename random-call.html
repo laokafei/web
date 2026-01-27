@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>课堂随机点名</title>
+
+  <!-- Excel 解析库（SheetJS） -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+
+  <style>
+    :root {
+      --bg: #f6f7f9;
+      --card: #ffffff;
+      --primary: #3a7afe;
+      --text: #333;
+      --muted: #777;
+      --border: #e5e7eb;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      color: var(--text);
+    }
+
+    .container {
+      width: 420px;
+      background: var(--card);
+      border-radius: 12px;
+      padding: 28px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+    }
+
+    h1 {
+      margin: 0 0 20px;
+      font-size: 20px;
+      text-align: center;
+      font-weight: 600;
+    }
+
+    .result {
+      height: 80px;
+      border: 2px dashed var(--border);
+      border-radius: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 28px;
+      font-weight: 600;
+      color: var(--primary);
+      margin-bottom: 20px;
+    }
+
+    .controls {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    button {
+      flex: 1;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: #fff;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+
+    button.primary {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+
+    button:hover {
+      opacity: 0.9;
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+
+    .file-label {
+      display: block;
+      text-align: center;
+      font-size: 13px;
+      color: var(--primary);
+      cursor: pointer;
+      margin-bottom: 12px;
+    }
+
+    .status {
+      font-size: 12px;
+      color: var(--muted);
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>课堂随机点名</h1>
+
+    <div class="result" id="result">请导入名单</div>
+
+    <label class="file-label">
+      导入名单（Excel / TXT / CSV）
+      <input type="file" id="fileInput" accept=".xlsx,.txt,.csv" />
+    </label>
+
+    <div class="controls">
+      <button class="primary" id="pickBtn">随机点名</button>
+      <button id="resetBtn">重置</button>
+    </div>
+
+    <div class="status" id="status">未加载名单</div>
+  </div>
+
+  <script>
+    let allNames = [];
+    let remainingNames = [];
+
+    const resultEl = document.getElementById("result");
+    const statusEl = document.getElementById("status");
+    const fileInput = document.getElementById("fileInput");
+
+    fileInput.addEventListener("change", () => {
+      const file = fileInput.files[0];
+      if (!file) return;
+
+      const ext = file.name.split(".").pop().toLowerCase();
+
+      if (ext === "xlsx") {
+        readExcel(file);
+      } else {
+        readText(file);
+      }
+    });
+
+    function readExcel(file) {
+      const reader = new FileReader();
+      reader.onload = e => {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, { type: "array" });
+        const sheet = workbook.Sheets[workbook.SheetNames[0]];
+        const rows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+
+        allNames = rows
+          .map(row => row[0])
+          .filter(Boolean)
+          .map(name => name.toString().trim());
+
+        resetState("名单已加载（Excel）");
+      };
+      reader.readAsArrayBuffer(file);
+    }
+
+    function readText(file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        allNames = reader.result
+          .split(/\r?\n|,/)
+          .map(n => n.trim())
+          .filter(Boolean);
+
+        resetState("名单已加载（文本）");
+      };
+
+      reader.readAsText(file, "utf-8");
+    }
+
+    function resetState(message) {
+      remainingNames = [...allNames];
+      resultEl.textContent = message;
+      updateStatus();
+    }
+
+    document.getElementById("pickBtn").addEventListener("click", () => {
+      if (remainingNames.length === 0) {
+        resultEl.textContent = "已点完";
+        return;
+      }
+
+      const index = Math.floor(Math.random() * remainingNames.length);
+      const name = remainingNames.splice(index, 1)[0];
+      resultEl.textContent = name;
+      updateStatus();
+    });
+
+    document.getElementById("resetBtn").addEventListener("click", () => {
+      remainingNames = [...allNames];
+      resultEl.textContent = "已重置";
+      updateStatus();
+    });
+
+    function updateStatus() {
+      statusEl.textContent =
+        `总人数：${allNames.length} ｜ 剩余：${remainingNames.length}`;
+    }
+  </script>
+</body>
+</html>
