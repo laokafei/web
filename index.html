@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>东台市城乡一体化集体备课登陆平台</title>
+    <!-- 字体与图标库 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,400..700;1,14..32,400..700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* 样式完整保留（与之前完全相同） */
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:'Inter',sans-serif; background:linear-gradient(145deg,#c1d9f0,#a6c1e0); min-height:100vh; display:flex; align-items:center; justify-content:center; padding:0.8rem; }
+        .platform { width:100%; max-width:1400px; height:95vh; max-height:950px; background:rgba(255,255,255,0.25); backdrop-filter:blur(18px); border-radius:48px; box-shadow:0 30px 60px -20px rgba(0,30,60,0.5),0 0 0 1px rgba(255,255,255,0.5) inset; padding:1.8rem 2rem; display:flex; flex-direction:column; overflow:hidden; border:1px solid rgba(255,255,255,0.6); }
+        .title-row { text-align:center; margin-bottom:1.2rem; flex-shrink:0; }
+        .title-row h1 { font-size:2.2rem; font-weight:700; background:linear-gradient(135deg,#113855,#1e4e75); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; text-shadow:0 4px 12px rgba(255,255,255,0.5); }
+        .title-row .sub { color:#1a405e; background:rgba(255,255,255,0.5); padding:0.2rem 1.8rem; border-radius:40px; display:inline-block; font-size:0.9rem; font-weight:500; backdrop-filter:blur(4px); margin-top:0.2rem; }
+        .split-panel { display:flex; flex:1; gap:1.8rem; min-height:0; flex-wrap:wrap; }
+        .main-team { flex:1.2; min-width:300px; background:rgba(255,255,255,0.4); backdrop-filter:blur(8px); border-radius:40px; padding:1.5rem 1.8rem; box-shadow:0 15px 30px -10px rgba(0,30,50,0.2); border:1px solid rgba(255,255,255,0.8); display:flex; flex-direction:column; overflow-y:auto; }
+        .assist-team { flex:0.9; min-width:260px; background:rgba(255,255,255,0.35); backdrop-filter:blur(8px); border-radius:40px; padding:1.5rem 1.5rem; border:1px solid rgba(255,255,255,0.8); display:flex; flex-direction:column; overflow-y:auto; }
+        .section-title { font-size:1.5rem; font-weight:700; color:#0a2f4a; margin-bottom:1.2rem; padding-bottom:0.5rem; border-bottom:3px solid rgba(255,255,255,0.7); display:flex; align-items:center; gap:0.5rem; }
+        .section-title i { color:#1e5a88; }
+        .login-area { background:rgba(255,255,255,0.3); border-radius:32px; padding:1.2rem; margin-bottom:1.5rem; border:1px solid white; }
+        .login-title { font-weight:600; color:#11304b; margin-bottom:0.8rem; font-size:1.2rem; }
+        .login-input-group { display:flex; gap:0.6rem; flex-wrap:wrap; align-items:center; }
+        .login-input-group input { flex:1 1 120px; padding:0.8rem 1rem; border:none; border-radius:40px; background:rgba(255,255,255,0.9); font-size:0.9rem; outline:none; border:1px solid transparent; }
+        .login-input-group input:focus { border-color:#3d7eb0; box-shadow:0 0 0 3px rgba(70,130,200,0.3); }
+        .login-btn { background:#1d5b91; color:white; border:none; padding:0.8rem 2rem; border-radius:40px; font-weight:600; cursor:pointer; border:1px solid rgba(255,255,255,0.5); box-shadow:0 6px 12px rgba(0,40,70,0.2); }
+        .login-btn:hover { background:#154b78; transform:scale(1.02); }
+        .logout-btn { background:transparent; border:1px solid #315f88; color:#1e4463; padding:0.4rem 1.2rem; border-radius:40px; font-weight:500; cursor:pointer; margin-left:0.5rem; }
+        .booking-form { margin-top:0.8rem; }
+        .form-row { display:flex; flex-wrap:wrap; gap:0.8rem; margin-bottom:1rem; }
+        .form-group { flex:1 1 calc(50% - 0.8rem); min-width:150px; }
+        .form-group label { display:block; font-size:0.8rem; font-weight:600; color:#1d3f5c; margin-bottom:0.3rem; }
+        .form-group input { width:100%; padding:0.8rem 1rem; border-radius:30px; border:none; background:rgba(255,255,255,0.9); font-size:0.9rem; outline:none; border:1px solid rgba(255,255,255,0.8); }
+        .form-group input:focus { border-color:#2b6fa8; }
+        .form-group input::placeholder { color:rgba(0,0,0,0.45); }
+        .submit-btn { background:#2073b0; color:white; border:none; padding:1rem 2rem; border-radius:50px; font-weight:700; width:100%; cursor:pointer; box-shadow:0 10px 20px -8px #144a70; }
+        .submit-btn:hover { background:#195e91; }
+        .quick-nav { background:rgba(255,255,255,0.5); border-radius:34px; padding:1.3rem 1.2rem; text-align:center; margin-bottom:2rem; border:1px solid white; }
+        .nav-label { font-size:0.9rem; color:#133752; margin-bottom:0.5rem; }
+        .nav-button { display:inline-block; background:#208f6e; color:white; padding:1rem 2rem; border-radius:50px; font-weight:700; font-size:1.3rem; text-decoration:none; box-shadow:0 10px 18px -6px #126b4e; width:100%; border:1px solid rgba(255,255,255,0.5); }
+        .nav-button:hover { background:#1a7a5b; }
+        .nav-button.disabled { background:#a5b9c9; pointer-events:none; opacity:0.5; }
+        .appointments-title { font-weight:700; color:#0d344f; font-size:1.2rem; margin:1.2rem 0 0.8rem; display:flex; align-items:center; gap:0.4rem; }
+        .appointments-list { list-style:none; overflow-y:auto; flex:1; }
+        .appointments-list li { background:rgba(255,255,255,0.6); backdrop-filter:blur(4px); margin-bottom:0.8rem; padding:1rem; border-radius:24px; border:1px solid white; display:flex; flex-direction:column; gap:0.4rem; }
+        .appointment-header { display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap; }
+        .badge { background:#23659b; color:white; border-radius:30px; padding:0.2rem 0.8rem; font-size:0.7rem; font-weight:600; }
+        .appointment-detail { font-size:0.9rem; display:flex; flex-wrap:wrap; gap:0.8rem; color:#193f5c; }
+        .appointment-detail i { width:1.2rem; color:#2c6c9e; }
+        .appointment-url { word-break:break-all; font-size:0.8rem; background:rgba(255,255,255,0.5); padding:0.3rem 0.8rem; border-radius:30px; }
+        .action-buttons { display:flex; gap:0.5rem; margin-left:auto; }
+        .edit-btn, .delete-btn { background:rgba(255,255,255,0.8); border:none; border-radius:30px; padding:0.3rem 1rem; font-size:0.75rem; font-weight:600; cursor:pointer; border:1px solid white; }
+        .edit-btn { color:#1c4e7a; } .edit-btn:hover { background:#b2d5ff; }
+        .delete-btn { color:#b13e3e; } .delete-btn:hover { background:#ffc9c9; }
+        .empty-message { color:#3b5d7a; font-style:italic; text-align:center; padding:2rem 0; }
+        @media (max-width:720px) { .platform { height:auto; max-height:none; padding:1rem; border-radius:32px; } .split-panel { flex-direction:column; } .main-team,.assist-team { max-height:500px; } .title-row h1 { font-size:1.8rem; } }
+    </style>
+</head>
+<body>
+<div class="platform">
+    <div class="title-row">
+        <h1>⛵ 东台市城乡一体化集体备课登陆平台</h1>
+        <div class="sub"><i class="fas fa-users"></i> 主备预约 · 参备直达 <i class="fas fa-arrow-right"></i></div>
+    </div>
+    <div class="split-panel">
+        <!-- 左侧主备单位区域 -->
+        <div class="main-team">
+            <div class="section-title"><i class="fas fa-chalkboard-teacher"></i> 主备单位区域</div>
+            <div id="loginSection" class="login-area">
+                <div class="login-title"><i class="fas fa-lock"></i> 主备单位登录</div>
+                <div class="login-input-group">
+                    <!-- 用户名和密码输入框初始为空 -->
+                    <input type="text" id="username" placeholder="用户名">
+                    <input type="password" id="password" placeholder="密码">
+                    <button class="login-btn" id="loginBtn">登录</button>
+                </div>
+            </div>
+            <div id="bookingSection" style="display: none;" class="booking-form">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <span style="font-weight:600; color:#0f3b5a;"><i class="fas fa-pen"></i> 提交/修改预约</span>
+                    <button class="logout-btn" id="logoutBtn">退出</button>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>学校名称</label><input type="text" id="schoolName" placeholder="例如：实验中学"></div>
+                    <div class="form-group"><label>年级</label><input type="text" id="grade" placeholder="例如：七年级"></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>学科</label><input type="text" id="subject" placeholder="例如：数学"></div>
+                    <div class="form-group"><label>开始时间</label><input type="datetime-local" id="startTime" step="300"></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>结束时间</label><input type="datetime-local" id="endTime" step="300"></div>
+                    <div class="form-group"><label>备课网址</label><input type="url" id="url" placeholder="https://example.com"></div>
+                </div>
+                <button class="submit-btn" id="submitBooking"><i class="fas fa-cloud-upload-alt"></i> 提交预约</button>
+            </div>
+            <div style="margin-top: auto; color: #24537c; font-size:0.85rem; padding-top:1rem;">
+                <i class="fas fa-info-circle"></i> 登录后可提交/修改/删除预约（修改时请使用列表中的“修改”按钮填充表单）
+            </div>
+        </div>
+        <!-- 右侧参备单位区域 -->
+        <div class="assist-team">
+            <div class="section-title"><i class="fas fa-users"></i> 参备单位区域</div>
+            <div class="quick-nav">
+                <div class="nav-label"><i class="fas fa-door-open"></i> 当前集体备课入口</div>
+                <a href="#" id="navButton" class="nav-button disabled" target="_blank">进入集体备课 <i class="fas fa-arrow-up-right-from-square"></i></a>
+            </div>
+            <div class="appointments-title"><i class="fas fa-list"></i> 当前预约信息 <span id="appointmentCount">(0)</span></div>
+            <ul class="appointments-list" id="appointmentList"><li class="empty-message">暂无有效预约，或已过期</li></ul>
+        </div>
+    </div>
+</div>
+<script>
+    (function() {
+        // --- 配置 ---
+        const POST_URL = 'https://quickform.cn/api/ck6lpk2kni';
+        const GET_ALL_URL = 'https://quickform.cn/api/ck6lpk2kni/all';
+        // 硬编码用户名密码
+        const VALID_USERNAME = 'beike';
+        const VALID_PASSWORD = 'beike123';
+
+        // --- 状态 ---
+        let loggedInUser = null; // 存储当前登录的用户名（仅用于加密）
+        let allAppointments = [];
+        let validAppointments = [];
+        let editingId = null;
+
+        // --- DOM 元素 ---
+        const loginSection = document.getElementById('loginSection');
+        const bookingSection = document.getElementById('bookingSection');
+        const loginBtn = document.getElementById('loginBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const usernameInp = document.getElementById('username');
+        const passwordInp = document.getElementById('password');
+        const schoolName = document.getElementById('schoolName');
+        const grade = document.getElementById('grade');
+        const subject = document.getElementById('subject');
+        const startTime = document.getElementById('startTime');
+        const endTime = document.getElementById('endTime');
+        const url = document.getElementById('url');
+        const submitBtn = document.getElementById('submitBooking');
+        const navButton = document.getElementById('navButton');
+        const appointmentList = document.getElementById('appointmentList');
+        const appointmentCount = document.getElementById('appointmentCount');
+
+        // --- 辅助函数：取整到最近5分钟 ---
+        function roundToNearestFiveMinutes(date) {
+            const minutes = date.getMinutes();
+            const remainder = minutes % 5;
+            if (remainder < 2.5) {
+                date.setMinutes(minutes - remainder);
+            } else {
+                date.setMinutes(minutes + (5 - remainder));
+            }
+            date.setSeconds(0);
+            date.setMilliseconds(0);
+            return date;
+        }
+
+        // --- 设置默认时间：开始时间=当前时间取整，结束时间=开始时间+45分钟取整 ---
+        function setDefaultTimes() {
+            const now = new Date();
+            const start = roundToNearestFiveMinutes(now);
+            const year = start.getFullYear();
+            const month = String(start.getMonth() + 1).padStart(2, '0');
+            const day = String(start.getDate()).padStart(2, '0');
+            const hours = String(start.getHours()).padStart(2, '0');
+            const minutes = String(start.getMinutes()).padStart(2, '0');
+            startTime.value = `${year}-${month}-${day}T${hours}:${minutes}`;
+
+            const end = new Date(start.getTime() + 45 * 60000);
+            const endRounded = roundToNearestFiveMinutes(end);
+            const endYear = endRounded.getFullYear();
+            const endMonth = String(endRounded.getMonth() + 1).padStart(2, '0');
+            const endDay = String(endRounded.getDate()).padStart(2, '0');
+            const endHours = String(endRounded.getHours()).padStart(2, '0');
+            const endMinutes = String(endRounded.getMinutes()).padStart(2, '0');
+            endTime.value = `${endYear}-${endMonth}-${endDay}T${endHours}:${endMinutes}`;
+        }
+        setDefaultTimes();
+
+        // --- 登录验证（直接比较硬编码凭据）---
+        function checkLogin() {
+            const username = usernameInp.value.trim();
+            const password = passwordInp.value.trim();
+            if (username === VALID_USERNAME && password === VALID_PASSWORD) {
+                loggedInUser = { username: username }; // 保存用户名用于加密
+                loginSection.style.display = 'none';
+                bookingSection.style.display = 'block';
+                renderAppointments(); // 重新渲染以显示编辑/删除按钮
+            } else {
+                alert('用户名或密码错误（正确为 beike/beike123）');
+            }
+        }
+
+        function logout() {
+            loggedInUser = null;
+            editingId = null;
+            loginSection.style.display = 'block';
+            bookingSection.style.display = 'none';
+            renderAppointments();
+        }
+
+        // --- 过滤过期并排序 (与接口字段匹配) ---
+        function filterAndSortAppointments(appointments) {
+            const now = new Date();
+            const valid = appointments.filter(apt => {
+                if (!apt.endTime) return false;
+                const end = new Date(apt.endTime);
+                return end > now;
+            });
+            valid.sort((a, b) => (a.startTime || '').localeCompare(b.startTime || ''));
+            return valid;
+        }
+
+        // --- 渲染预约列表 ---
+        function renderAppointments() {
+            if (validAppointments.length === 0) {
+                appointmentList.innerHTML = '<li class="empty-message">📭 暂无进行中的备课，请等待主备提交</li>';
+                navButton.classList.add('disabled');
+                navButton.removeAttribute('href');
+                navButton.innerHTML = '进入集体备课 (暂无)';
+                appointmentCount.innerText = '(0)';
+                return;
+            }
+
+            let htmlStr = '';
+            validAppointments.forEach((apt, index) => {
+                const start = (apt.startTime || '').replace('T', ' ');
+                const end = (apt.endTime || '').replace('T', ' ');
+                // 显示提交时附加的加密用户名（如果有）
+                const teacherInfo = apt.encrypted_teacher ? 
+                    `<span style="font-size:0.8rem; color:#4a6a8a;"><i class="fas fa-user-lock"></i> 提交人(加密): ${apt.encrypted_teacher}</span>` : '';
+                
+                const actionButtons = loggedInUser ? `
+                    <div class="action-buttons">
+                        <button class="edit-btn" data-id="${apt.id || index}"><i class="fas fa-edit"></i> 修改</button>
+                        <button class="delete-btn" data-id="${apt.id || index}"><i class="fas fa-trash"></i> 删除</button>
+                    </div>
+                ` : '';
+
+                htmlStr += `
+                    <li>
+                        <div class="appointment-header">
+                            <span class="badge">#${index+1}</span>
+                            <strong>${apt.schoolName || '?'}</strong>
+                            ${actionButtons}
+                        </div>
+                        <div class="appointment-detail">
+                            <span><i class="fas fa-layer-group"></i> ${apt.grade || '—'}</span>
+                            <span><i class="fas fa-flask"></i> ${apt.subject || '—'}</span>
+                            <span><i class="fas fa-clock"></i> ${start} ~ ${end.split(' ')[1] || ''}</span>
+                        </div>
+                        <div class="appointment-url">
+                            <i class="fas fa-link"></i> <a href="${apt.url}" target="_blank">${apt.url}</a>
+                        </div>
+                        ${teacherInfo}
+                    </li>
+                `;
+            });
+            appointmentList.innerHTML = htmlStr;
+            appointmentCount.innerText = `(${validAppointments.length})`;
+
+            // 更新导航按钮
+            const firstUrl = validAppointments[0]?.url;
+            if (firstUrl) {
+                navButton.href = firstUrl;
+                navButton.classList.remove('disabled');
+                navButton.innerHTML = `进入集体备课 <i class="fas fa-arrow-up-right-from-square"></i>`;
+            } else {
+                navButton.classList.add('disabled');
+                navButton.removeAttribute('href');
+                navButton.innerHTML = '进入集体备课 (暂无)';
+            }
+
+            // 绑定编辑/删除事件 (仅登录用户可见)
+            if (loggedInUser) {
+                document.querySelectorAll('.edit-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const id = e.currentTarget.dataset.id;
+                        const apt = allAppointments.find(a => a.id === id) || validAppointments.find(a => a.id === id);
+                        if (apt) {
+                            schoolName.value = apt.schoolName || '';
+                            grade.value = apt.grade || '';
+                            subject.value = apt.subject || '';
+                            if (apt.startTime) startTime.value = apt.startTime.slice(0,16);
+                            if (apt.endTime) endTime.value = apt.endTime.slice(0,16);
+                            url.value = apt.url || '';
+                            editingId = apt.id;
+                            alert('请在左边修改后重新提交。');
+                        }
+                    });
+                });
+
+                document.querySelectorAll('.delete-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const id = e.currentTarget.dataset.id;
+                        if (confirm('确定要删除该预约吗？')) {
+                            // 注意：真实接口可能不支持删除，这里仅做本地模拟
+                            allAppointments = allAppointments.filter(a => a.id !== id);
+                            validAppointments = filterAndSortAppointments(allAppointments);
+                            renderAppointments();
+                            if (editingId === id) editingId = null;
+                            alert('删除成功（模拟操作，真实接口需后端支持）');
+                        }
+                    });
+                });
+            }
+        }
+
+        // --- 从接口获取预约数据 ---
+        async function fetchAppointments() {
+            try {
+                const response = await fetch(GET_ALL_URL, {
+                    method: 'GET',
+                    headers: { 'Accept': 'application/json' }
+                });
+                if (!response.ok) throw new Error('网络异常');
+                const data = await response.json();
+                // 接口返回的数据在 submissions 字段中
+                const submissions = data.submissions || [];
+                
+                // 映射字段，并为每条数据生成一个临时ID（用于前端编辑/删除模拟）
+                allAppointments = submissions.map((item, idx) => ({
+                    id: `api_${Date.now()}_${idx}`,
+                    schoolName: item.schoolName || '',
+                    grade: item.grade || '',
+                    subject: item.subject || '',
+                    startTime: item.startTime || '',
+                    endTime: item.endTime || '',
+                    url: item.url || '',
+                    encrypted_teacher: item.encrypted_teacher || ''
+                }));
+            } catch (e) {
+                console.warn('获取预约失败，使用空数据', e);
+                allAppointments = [];
+            }
+
+            validAppointments = filterAndSortAppointments(allAppointments);
+            renderAppointments();
+        }
+
+        // --- 提交新预约或更新 (向接口 POST 数据) ---
+        async function submitNewBooking() {
+            if (!loggedInUser) {
+                alert('请先登录');
+                return;
+            }
+
+            if (!schoolName.value || !grade.value || !subject.value || !startTime.value || !endTime.value || !url.value) {
+                alert('请完整填写所有字段');
+                return;
+            }
+
+            // 对当前登录用户名进行加密（示例使用Base64）
+            const encryptedTeacher = btoa(loggedInUser.username); // 简单Base64编码
+
+            const payload = {
+                schoolName: schoolName.value,
+                grade: grade.value,
+                subject: subject.value,
+                startTime: startTime.value,
+                endTime: endTime.value,
+                url: url.value,
+                // 附加加密后的用户名
+                encrypted_teacher: encryptedTeacher,
+                submitAt: new Date().toISOString()
+            };
+
+            try {
+                const response = await fetch(POST_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (!response.ok) throw new Error('提交失败');
+                
+                alert('预约提交成功！加密后的用户名已附加在请求中。');
+                // 重新获取最新数据
+                await fetchAppointments();
+                
+                // 如果是编辑模式，清除编辑状态
+                if (editingId) editingId = null;
+                
+            } catch (err) {
+                console.error('提交出错:', err);
+                alert('提交失败，请检查网络或接口。');
+            }
+        }
+
+        // --- 事件绑定 ---
+        loginBtn.addEventListener('click', checkLogin);
+        logoutBtn.addEventListener('click', logout);
+        submitBtn.addEventListener('click', submitNewBooking);
+
+        // 初始化获取数据
+        fetchAppointments();
+
+        // 定时刷新 (每30秒)
+        setInterval(fetchAppointments, 30000);
+
+        // 按回车快速登录
+        passwordInp.addEventListener('keypress', (e) => {
+            if(e.key === 'Enter') checkLogin();
+        });
+    })();
+</script>
+</body>
+</html>
