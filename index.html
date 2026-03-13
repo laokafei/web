@@ -10,7 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,400..700;1,14..32,400..700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* 样式完整保留（与之前完全相同） */
+        /* 样式保持不变 */
         * { margin:0; padding:0; box-sizing:border-box; }
         body { font-family:'Inter',sans-serif; background:linear-gradient(145deg,#c1d9f0,#a6c1e0); min-height:100vh; display:flex; align-items:center; justify-content:center; padding:0.8rem; }
         .platform { width:100%; max-width:1400px; height:95vh; max-height:950px; background:rgba(255,255,255,0.25); backdrop-filter:blur(18px); border-radius:48px; box-shadow:0 30px 60px -20px rgba(0,30,60,0.5),0 0 0 1px rgba(255,255,255,0.5) inset; padding:1.8rem 2rem; display:flex; flex-direction:column; overflow:hidden; border:1px solid rgba(255,255,255,0.6); }
@@ -73,7 +73,6 @@
             <div id="loginSection" class="login-area">
                 <div class="login-title"><i class="fas fa-lock"></i> 主备单位登录</div>
                 <div class="login-input-group">
-                    <!-- 用户名和密码输入框初始为空 -->
                     <input type="text" id="username" placeholder="用户名">
                     <input type="password" id="password" placeholder="密码">
                     <button class="login-btn" id="loginBtn">登录</button>
@@ -119,15 +118,15 @@
         // --- 配置 ---
         const POST_URL = 'https://quickform.cn/api/ck6lpk2kni';
         const GET_ALL_URL = 'https://quickform.cn/api/ck6lpk2kni/all';
-        // 硬编码用户名密码
         const VALID_USERNAME = 'beike';
         const VALID_PASSWORD = 'beike123';
+        const DELETED_KEYS_STORAGE = 'deleted_booking_keys';
 
         // --- 状态 ---
-        let loggedInUser = null; // 存储当前登录的用户名（仅用于加密）
+        let loggedInUser = null;
         let allAppointments = [];
         let validAppointments = [];
-        let editingId = null;
+        let editingId = null; // 存储正在编辑的原预约key
 
         // --- DOM 元素 ---
         const loginSection = document.getElementById('loginSection');
@@ -147,6 +146,37 @@
         const appointmentList = document.getElementById('appointmentList');
         const appointmentCount = document.getElementById('appointmentCount');
 
+        // --- 工具函数：生成预约的唯一键（基于内容）---
+        function getAppointmentKey(apt) {
+            return btoa(unescape(encodeURIComponent(
+                apt.schoolName + '|' + 
+                apt.grade + '|' + 
+                apt.subject + '|' + 
+                apt.startTime + '|' + 
+                apt.endTime + '|' + 
+                apt.url
+            )));
+        }
+
+        // --- 管理已删除预约的键 (localStorage) ---
+        function getDeletedKeys() {
+            const keys = localStorage.getItem(DELETED_KEYS_STORAGE);
+            return keys ? JSON.parse(keys) : [];
+        }
+
+        function addDeletedKey(key) {
+            const keys = getDeletedKeys();
+            if (!keys.includes(key)) {
+                keys.push(key);
+                localStorage.setItem(DELETED_KEYS_STORAGE, JSON.stringify(keys));
+            }
+        }
+
+        function removeDeletedKey(key) {
+            const keys = getDeletedKeys().filter(k => k !== key);
+            localStorage.setItem(DELETED_KEYS_STORAGE, JSON.stringify(keys));
+        }
+
         // --- 辅助函数：取整到最近5分钟 ---
         function roundToNearestFiveMinutes(date) {
             const minutes = date.getMinutes();
@@ -161,7 +191,7 @@
             return date;
         }
 
-        // --- 设置默认时间：开始时间=当前时间取整，结束时间=开始时间+45分钟取整 ---
+        // --- 设置默认时间 ---
         function setDefaultTimes() {
             const now = new Date();
             const start = roundToNearestFiveMinutes(now);
@@ -183,15 +213,15 @@
         }
         setDefaultTimes();
 
-        // --- 登录验证（直接比较硬编码凭据）---
+        // --- 登录验证 ---
         function checkLogin() {
             const username = usernameInp.value.trim();
             const password = passwordInp.value.trim();
             if (username === VALID_USERNAME && password === VALID_PASSWORD) {
-                loggedInUser = { username: username }; // 保存用户名用于加密
+                loggedInUser = { username: username };
                 loginSection.style.display = 'none';
                 bookingSection.style.display = 'block';
-                renderAppointments(); // 重新渲染以显示编辑/删除按钮
+                renderAppointments();
             } else {
                 alert('用户名或密码错误（正确为 beike/beike123）');
             }
@@ -205,13 +235,14 @@
             renderAppointments();
         }
 
-        // --- 过滤过期并排序 (与接口字段匹配) ---
+        // --- 过滤过期、已删除并排序 ---
         function filterAndSortAppointments(appointments) {
             const now = new Date();
+            const deletedKeys = getDeletedKeys();
             const valid = appointments.filter(apt => {
                 if (!apt.endTime) return false;
                 const end = new Date(apt.endTime);
-                return end > now;
+                return end > now && !deletedKeys.includes(getAppointmentKey(apt));
             });
             valid.sort((a, b) => (a.startTime || '').localeCompare(b.startTime || ''));
             return valid;
@@ -232,14 +263,13 @@
             validAppointments.forEach((apt, index) => {
                 const start = (apt.startTime || '').replace('T', ' ');
                 const end = (apt.endTime || '').replace('T', ' ');
-                // 显示提交时附加的加密用户名（如果有）
                 const teacherInfo = apt.encrypted_teacher ? 
                     `<span style="font-size:0.8rem; color:#4a6a8a;"><i class="fas fa-user-lock"></i> 提交人(加密): ${apt.encrypted_teacher}</span>` : '';
                 
                 const actionButtons = loggedInUser ? `
                     <div class="action-buttons">
-                        <button class="edit-btn" data-id="${apt.id || index}"><i class="fas fa-edit"></i> 修改</button>
-                        <button class="delete-btn" data-id="${apt.id || index}"><i class="fas fa-trash"></i> 删除</button>
+                        <button class="edit-btn" data-key="${getAppointmentKey(apt)}"><i class="fas fa-edit"></i> 修改</button>
+                        <button class="delete-btn" data-key="${getAppointmentKey(apt)}"><i class="fas fa-trash"></i> 删除</button>
                     </div>
                 ` : '';
 
@@ -281,8 +311,8 @@
             if (loggedInUser) {
                 document.querySelectorAll('.edit-btn').forEach(btn => {
                     btn.addEventListener('click', (e) => {
-                        const id = e.currentTarget.dataset.id;
-                        const apt = allAppointments.find(a => a.id === id) || validAppointments.find(a => a.id === id);
+                        const key = e.currentTarget.dataset.key;
+                        const apt = allAppointments.find(a => getAppointmentKey(a) === key);
                         if (apt) {
                             schoolName.value = apt.schoolName || '';
                             grade.value = apt.grade || '';
@@ -290,22 +320,20 @@
                             if (apt.startTime) startTime.value = apt.startTime.slice(0,16);
                             if (apt.endTime) endTime.value = apt.endTime.slice(0,16);
                             url.value = apt.url || '';
-                            editingId = apt.id;
-                            alert('请在左边修改后重新提交。');
+                            editingId = key; // 记录原预约key
+                            alert('请在左边修改后重新提交。提交后旧版本将自动隐藏。');
                         }
                     });
                 });
 
                 document.querySelectorAll('.delete-btn').forEach(btn => {
                     btn.addEventListener('click', (e) => {
-                        const id = e.currentTarget.dataset.id;
-                        if (confirm('确定要删除该预约吗？')) {
-                            // 注意：真实接口可能不支持删除，这里仅做本地模拟
-                            allAppointments = allAppointments.filter(a => a.id !== id);
+                        const key = e.currentTarget.dataset.key;
+                        if (confirm('确定要删除该预约吗？此操作将在本地永久隐藏，刷新后不再出现。')) {
+                            addDeletedKey(key);
                             validAppointments = filterAndSortAppointments(allAppointments);
                             renderAppointments();
-                            if (editingId === id) editingId = null;
-                            alert('删除成功（模拟操作，真实接口需后端支持）');
+                            if (editingId === key) editingId = null;
                         }
                     });
                 });
@@ -321,12 +349,9 @@
                 });
                 if (!response.ok) throw new Error('网络异常');
                 const data = await response.json();
-                // 接口返回的数据在 submissions 字段中
                 const submissions = data.submissions || [];
                 
-                // 映射字段，并为每条数据生成一个临时ID（用于前端编辑/删除模拟）
-                allAppointments = submissions.map((item, idx) => ({
-                    id: `api_${Date.now()}_${idx}`,
+                allAppointments = submissions.map((item) => ({
                     schoolName: item.schoolName || '',
                     grade: item.grade || '',
                     subject: item.subject || '',
@@ -344,7 +369,7 @@
             renderAppointments();
         }
 
-        // --- 提交新预约或更新 (向接口 POST 数据) ---
+        // --- 提交新预约 ---
         async function submitNewBooking() {
             if (!loggedInUser) {
                 alert('请先登录');
@@ -356,17 +381,26 @@
                 return;
             }
 
-            // 对当前登录用户名进行加密（示例使用Base64）
-            const encryptedTeacher = btoa(loggedInUser.username); // 简单Base64编码
-
-            const payload = {
+            // 构造临时预约对象用于计算key
+            const tempApt = {
                 schoolName: schoolName.value,
                 grade: grade.value,
                 subject: subject.value,
                 startTime: startTime.value,
                 endTime: endTime.value,
-                url: url.value,
-                // 附加加密后的用户名
+                url: url.value
+            };
+            const newKey = getAppointmentKey(tempApt);
+
+            // 如果是编辑模式，检查内容是否真的修改了
+            if (editingId && newKey === editingId) {
+                alert('您没有修改任何内容，无需提交。');
+                return;
+            }
+
+            const encryptedTeacher = btoa(loggedInUser.username);
+            const payload = {
+                ...tempApt,
                 encrypted_teacher: encryptedTeacher,
                 submitAt: new Date().toISOString()
             };
@@ -380,11 +414,15 @@
                 if (!response.ok) throw new Error('提交失败');
                 
                 alert('预约提交成功！加密后的用户名已附加在请求中。');
+                
+                // 如果是编辑模式，将原预约加入黑名单（隐藏旧版本）
+                if (editingId) {
+                    addDeletedKey(editingId);
+                    editingId = null;
+                }
+                
                 // 重新获取最新数据
                 await fetchAppointments();
-                
-                // 如果是编辑模式，清除编辑状态
-                if (editingId) editingId = null;
                 
             } catch (err) {
                 console.error('提交出错:', err);
