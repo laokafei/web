@@ -125,10 +125,89 @@
         .modal-btn.cancel:hover {
             background: #d0dae6;
         }
-        @media (max-width:720px) {
-            .platform { height:auto; max-height:none; padding:1rem; border-radius:32px; }
-            .assist-team { max-height:80vh; }
-            .title-row h1 { font-size:1.8rem; }
+
+        /* 移动端优化 */
+        @media (max-width: 720px) {
+            .platform {
+                height: auto;
+                max-height: none;
+                padding: 1rem;
+                border-radius: 32px;
+            }
+            .assist-team {
+                max-height: 85vh;
+                padding: 1rem;
+            }
+            .title-row h1 {
+                font-size: 1.6rem;
+            }
+            .section-title {
+                font-size: 1.3rem;
+                margin-bottom: 1rem;
+            }
+            .nav-button {
+                font-size: 1.1rem;
+                padding: 0.8rem 1.2rem;
+            }
+            .today-title {
+                font-size: 1rem;
+            }
+            .activity-item {
+                padding: 0.8rem;
+            }
+            .badge {
+                font-size: 0.65rem;
+                padding: 0.15rem 0.6rem;
+            }
+            .set-btn {
+                font-size: 0.75rem;
+                padding: 0.3rem 0.8rem;
+            }
+            .activity-url {
+                font-size: 0.75rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .platform {
+                padding: 0.8rem;
+            }
+            .assist-team {
+                padding: 0.8rem;
+            }
+            .title-row h1 {
+                font-size: 1.4rem;
+            }
+            .nav-button {
+                font-size: 1rem;
+                padding: 0.7rem 1rem;
+            }
+            .activity-header {
+                gap: 0.3rem;
+            }
+            .badge {
+                font-size: 0.6rem;
+                padding: 0.1rem 0.5rem;
+            }
+            .set-btn {
+                font-size: 0.7rem;
+                padding: 0.25rem 0.7rem;
+            }
+            .modal-card {
+                padding: 1.5rem;
+                border-radius: 32px;
+            }
+            .modal-card h3 {
+                font-size: 1.3rem;
+            }
+            .modal-input input {
+                padding: 0.7rem;
+                font-size: 0.9rem;
+            }
+            .modal-btn {
+                padding: 0.7rem;
+                font-size: 0.9rem;
+            }
         }
     </style>
 </head>
