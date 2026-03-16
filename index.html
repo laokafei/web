@@ -3,25 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>东台市城乡一体化集体备课登陆平台</title>
+    <title>东台市城乡一体化集体备课 · 每日安排</title>
     <!-- 字体与图标库 -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,400..700;1,14..32,400..700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* 样式保持不变 */
         * { margin:0; padding:0; box-sizing:border-box; }
         body { font-family:'Inter',sans-serif; background:linear-gradient(145deg,#c1d9f0,#a6c1e0); min-height:100vh; display:flex; align-items:center; justify-content:center; padding:0.8rem; }
         .platform { width:100%; max-width:1400px; height:95vh; max-height:950px; background:rgba(255,255,255,0.25); backdrop-filter:blur(18px); border-radius:48px; box-shadow:0 30px 60px -20px rgba(0,30,60,0.5),0 0 0 1px rgba(255,255,255,0.5) inset; padding:1.8rem 2rem; display:flex; flex-direction:column; overflow:hidden; border:1px solid rgba(255,255,255,0.6); }
         .title-row { text-align:center; margin-bottom:1.2rem; flex-shrink:0; }
         .title-row h1 { font-size:2.2rem; font-weight:700; background:linear-gradient(135deg,#113855,#1e4e75); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; text-shadow:0 4px 12px rgba(255,255,255,0.5); }
-        .title-row .sub { color:#1a405e; background:rgba(255,255,255,0.5); padding:0.2rem 1.8rem; border-radius:40px; display:inline-block; font-size:0.9rem; font-weight:500; backdrop-filter:blur(4px); margin-top:0.2rem; }
         .split-panel { display:flex; flex:1; gap:1.8rem; min-height:0; flex-wrap:wrap; }
-        .main-team { flex:1.2; min-width:300px; background:rgba(255,255,255,0.4); backdrop-filter:blur(8px); border-radius:40px; padding:1.5rem 1.8rem; box-shadow:0 15px 30px -10px rgba(0,30,50,0.2); border:1px solid rgba(255,255,255,0.8); display:flex; flex-direction:column; overflow-y:auto; }
-        .assist-team { flex:0.9; min-width:260px; background:rgba(255,255,255,0.35); backdrop-filter:blur(8px); border-radius:40px; padding:1.5rem 1.5rem; border:1px solid rgba(255,255,255,0.8); display:flex; flex-direction:column; overflow-y:auto; }
+        /* 左侧主备区域 */
+        .main-team { flex:1; min-width:300px; background:rgba(255,255,255,0.4); backdrop-filter:blur(8px); border-radius:40px; padding:1.5rem 1.8rem; box-shadow:0 15px 30px -10px rgba(0,30,50,0.2); border:1px solid rgba(255,255,255,0.8); display:flex; flex-direction:column; overflow-y:auto; }
+        /* 右侧参备区域 */
+        .assist-team { flex:1.2; min-width:260px; background:rgba(255,255,255,0.35); backdrop-filter:blur(8px); border-radius:40px; padding:1.5rem 1.5rem; border:1px solid rgba(255,255,255,0.8); display:flex; flex-direction:column; overflow-y:auto; }
         .section-title { font-size:1.5rem; font-weight:700; color:#0a2f4a; margin-bottom:1.2rem; padding-bottom:0.5rem; border-bottom:3px solid rgba(255,255,255,0.7); display:flex; align-items:center; gap:0.5rem; }
         .section-title i { color:#1e5a88; }
+        /* 登录区域 */
         .login-area { background:rgba(255,255,255,0.3); border-radius:32px; padding:1.2rem; margin-bottom:1.5rem; border:1px solid white; }
         .login-title { font-weight:600; color:#11304b; margin-bottom:0.8rem; font-size:1.2rem; }
         .login-input-group { display:flex; gap:0.6rem; flex-wrap:wrap; align-items:center; }
@@ -30,6 +31,7 @@
         .login-btn { background:#1d5b91; color:white; border:none; padding:0.8rem 2rem; border-radius:40px; font-weight:600; cursor:pointer; border:1px solid rgba(255,255,255,0.5); box-shadow:0 6px 12px rgba(0,40,70,0.2); }
         .login-btn:hover { background:#154b78; transform:scale(1.02); }
         .logout-btn { background:transparent; border:1px solid #315f88; color:#1e4463; padding:0.4rem 1.2rem; border-radius:40px; font-weight:500; cursor:pointer; margin-left:0.5rem; }
+        /* 简化表单 */
         .booking-form { margin-top:0.8rem; }
         .form-row { display:flex; flex-wrap:wrap; gap:0.8rem; margin-bottom:1rem; }
         .form-group { flex:1 1 calc(50% - 0.8rem); min-width:150px; }
@@ -39,39 +41,41 @@
         .form-group input::placeholder { color:rgba(0,0,0,0.45); }
         .submit-btn { background:#2073b0; color:white; border:none; padding:1rem 2rem; border-radius:50px; font-weight:700; width:100%; cursor:pointer; box-shadow:0 10px 20px -8px #144a70; }
         .submit-btn:hover { background:#195e91; }
-        .quick-nav { background:rgba(255,255,255,0.5); border-radius:34px; padding:1.3rem 1.2rem; text-align:center; margin-bottom:2rem; border:1px solid white; }
-        .nav-label { font-size:0.9rem; color:#133752; margin-bottom:0.5rem; }
-        .nav-button { display:inline-block; background:#208f6e; color:white; padding:1rem 2rem; border-radius:50px; font-weight:700; font-size:1.3rem; text-decoration:none; box-shadow:0 10px 18px -6px #126b4e; width:100%; border:1px solid rgba(255,255,255,0.5); }
-        .nav-button:hover { background:#1a7a5b; }
-        .nav-button.disabled { background:#a5b9c9; pointer-events:none; opacity:0.5; }
-        .appointments-title { font-weight:700; color:#0d344f; font-size:1.2rem; margin:1.2rem 0 0.8rem; display:flex; align-items:center; gap:0.4rem; }
-        .appointments-list { list-style:none; overflow-y:auto; flex:1; }
-        .appointments-list li { background:rgba(255,255,255,0.6); backdrop-filter:blur(4px); margin-bottom:0.8rem; padding:1rem; border-radius:24px; border:1px solid white; display:flex; flex-direction:column; gap:0.4rem; }
-        .appointment-header { display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap; }
+        .current-target { background:rgba(255,255,240,0.6); border-radius:30px; padding:0.8rem 1rem; margin:1rem 0; font-size:0.9rem; border:1px solid white; }
+        /* 活动列表 */
+        .today-title { font-weight:700; color:#0d344f; font-size:1.2rem; margin:0 0 1rem 0; display:flex; align-items:center; gap:0.4rem; }
+        .activity-list { list-style:none; overflow-y:auto; flex:1; padding-right:0.3rem; }
+        .activity-item { background:rgba(255,255,255,0.6); backdrop-filter:blur(4px); margin-bottom:1rem; padding:1rem; border-radius:24px; border:1px solid white; display:flex; flex-direction:column; gap:0.5rem; }
+        .activity-item.expired { opacity:0.5; background:rgba(200,200,200,0.4); }
+        .activity-header { display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap; }
         .badge { background:#23659b; color:white; border-radius:30px; padding:0.2rem 0.8rem; font-size:0.7rem; font-weight:600; }
-        .appointment-detail { font-size:0.9rem; display:flex; flex-wrap:wrap; gap:0.8rem; color:#193f5c; }
-        .appointment-detail i { width:1.2rem; color:#2c6c9e; }
-        .appointment-url { word-break:break-all; font-size:0.8rem; background:rgba(255,255,255,0.5); padding:0.3rem 0.8rem; border-radius:30px; }
-        .action-buttons { display:flex; gap:0.5rem; margin-left:auto; }
-        .edit-btn, .delete-btn { background:rgba(255,255,255,0.8); border:none; border-radius:30px; padding:0.3rem 1rem; font-size:0.75rem; font-weight:600; cursor:pointer; border:1px solid white; }
-        .edit-btn { color:#1c4e7a; } .edit-btn:hover { background:#b2d5ff; }
-        .delete-btn { color:#b13e3e; } .delete-btn:hover { background:#ffc9c9; }
+        .badge.subject { background:#3c8a6e; }
+        .badge.time { background:#6c8da8; }
+        .expired-label { background:#b13e3e; color:white; border-radius:30px; padding:0.2rem 0.8rem; font-size:0.7rem; font-weight:600; margin-left:auto; }
+        .activity-url { display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap; font-size:0.85rem; background:rgba(255,255,255,0.5); padding:0.4rem 0.8rem; border-radius:30px; }
+        .url-link { word-break:break-all; color:#1e5a88; text-decoration:none; }
+        .url-link:hover { text-decoration:underline; }
+        .set-btn { background:#208f6e; color:white; border:none; border-radius:30px; padding:0.4rem 1rem; font-size:0.8rem; cursor:pointer; border:1px solid white; margin-left:auto; }
+        .set-btn:hover { background:#1a7a5b; }
         .empty-message { color:#3b5d7a; font-style:italic; text-align:center; padding:2rem 0; }
+        .nav-button { display:inline-block; background:#208f6e; color:white; padding:1rem 2rem; border-radius:50px; font-weight:700; font-size:1.3rem; text-decoration:none; box-shadow:0 10px 18px -6px #126b4e; width:100%; border:1px solid rgba(255,255,255,0.5); text-align:center; }
+        .nav-button.disabled { background:#a5b9c9; pointer-events:none; opacity:0.5; }
+        .section-divider { margin:0.5rem 0 0.2rem; font-size:0.9rem; color:#1a4d73; font-weight:600; border-bottom:1px dashed rgba(255,255,255,0.6); padding-bottom:0.2rem; }
         @media (max-width:720px) { .platform { height:auto; max-height:none; padding:1rem; border-radius:32px; } .split-panel { flex-direction:column; } .main-team,.assist-team { max-height:500px; } .title-row h1 { font-size:1.8rem; } }
     </style>
 </head>
 <body>
 <div class="platform">
     <div class="title-row">
-        <h1>⛵ 东台市城乡一体化集体备课登陆平台</h1>
-        <div class="sub"><i class="fas fa-users"></i> 主备预约 · 参备直达 <i class="fas fa-arrow-right"></i></div>
+        <h1>⛵ 东台市城乡一体化集体备课 · 每日安排</h1>
+        <!-- 副标题已移除 -->
     </div>
     <div class="split-panel">
-        <!-- 左侧主备单位区域 -->
+        <!-- 左侧主备单位区域 (登录+表单) -->
         <div class="main-team">
-            <div class="section-title"><i class="fas fa-chalkboard-teacher"></i> 主备单位区域</div>
+            <div class="section-title"><i class="fas fa-link"></i> 设置备课网址</div>
             <div id="loginSection" class="login-area">
-                <div class="login-title"><i class="fas fa-lock"></i> 主备单位登录</div>
+                <div class="login-title"><i class="fas fa-lock"></i> 登陆</div>
                 <div class="login-input-group">
                     <input type="text" id="username" placeholder="用户名">
                     <input type="password" id="password" placeholder="密码">
@@ -80,55 +84,87 @@
             </div>
             <div id="bookingSection" style="display: none;" class="booking-form">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                    <span style="font-weight:600; color:#0f3b5a;"><i class="fas fa-pen"></i> 提交/修改预约</span>
+                    <span style="font-weight:600; color:#0f3b5a;"><i class="fas fa-pen"></i> 设置网址</span>
                     <button class="logout-btn" id="logoutBtn">退出</button>
                 </div>
-                <div class="form-row">
-                    <div class="form-group"><label>学校名称</label><input type="text" id="schoolName" placeholder="例如：实验中学"></div>
-                    <div class="form-group"><label>年级</label><input type="text" id="grade" placeholder="例如：七年级"></div>
+                <div id="currentTargetHint" class="current-target">
+                    <i class="fas fa-info-circle"></i> 请从右侧选择要设置的年级学科
                 </div>
+                <input type="hidden" id="currentGrade" value="">
+                <input type="hidden" id="currentSubject" value="">
+                <input type="hidden" id="currentStart" value="">
+                <input type="hidden" id="currentEnd" value="">
+
                 <div class="form-row">
-                    <div class="form-group"><label>学科</label><input type="text" id="subject" placeholder="例如：数学"></div>
-                    <div class="form-group"><label>开始时间</label><input type="datetime-local" id="startTime" step="300"></div>
+                    <div class="form-group">
+                        <label>主备单位 <span style="font-weight:400;">(可留空)</span></label>
+                        <input type="text" id="schoolName" placeholder="例如：实验中学">
+                    </div>
+                    <div class="form-group">
+                        <label>备课网址 <span style="color:#b13e3e;">*必填</span></label>
+                        <input type="url" id="url" placeholder="https://example.com" required>
+                    </div>
                 </div>
-                <div class="form-row">
-                    <div class="form-group"><label>结束时间</label><input type="datetime-local" id="endTime" step="300"></div>
-                    <div class="form-group"><label>备课网址</label><input type="url" id="url" placeholder="https://example.com"></div>
-                </div>
-                <button class="submit-btn" id="submitBooking"><i class="fas fa-cloud-upload-alt"></i> 提交预约</button>
+                <button class="submit-btn" id="submitBooking"><i class="fas fa-cloud-upload-alt"></i> 提交网址</button>
             </div>
             <div style="margin-top: auto; color: #24537c; font-size:0.85rem; padding-top:1rem;">
-                <i class="fas fa-info-circle"></i> 登录后可提交/修改/删除预约（修改时请使用列表中的“修改”按钮填充表单）
+                <i class="fas fa-info-circle"></i> 登录后点击右侧“设置”为该学科指定网址，提交后自动覆盖旧网址。
             </div>
         </div>
-        <!-- 右侧参备单位区域 -->
+
+        <!-- 右侧参备单位区域 (今日活动列表) -->
         <div class="assist-team">
-            <div class="section-title"><i class="fas fa-users"></i> 参备单位区域</div>
-            <div class="quick-nav">
-                <div class="nav-label"><i class="fas fa-door-open"></i> 当前集体备课入口</div>
-                <a href="#" id="navButton" class="nav-button disabled" target="_blank">进入集体备课 <i class="fas fa-arrow-up-right-from-square"></i></a>
+            <div class="section-title"><i class="fas fa-door-open"></i> 集体备课入口</div>
+            <div class="quick-nav" style="background:rgba(255,255,255,0.5); border-radius:34px; padding:1rem; text-align:center; margin-bottom:1.5rem;">
+                <div class="nav-label"><i class="fas fa-arrow-right"></i> 当前可用备课</div>
+                <a href="#" id="navButton" class="nav-button disabled" target="_blank">进入备课 <i class="fas fa-arrow-up-right-from-square"></i></a>
             </div>
-            <div class="appointments-title"><i class="fas fa-list"></i> 当前预约信息 <span id="appointmentCount">(0)</span></div>
-            <ul class="appointments-list" id="appointmentList"><li class="empty-message">暂无有效预约，或已过期</li></ul>
+
+            <div class="today-title"><i class="fas fa-list"></i> 今日安排 (<span id="todayWeekday"></span>)</div>
+            <ul class="activity-list" id="activityList">
+                <li class="empty-message">加载中...</li>
+            </ul>
         </div>
     </div>
 </div>
+
 <script>
     (function() {
-        // --- 配置 ---
+        // ---------- 固定时间表数据 (七年级 & 八年级) ----------
+        const schedule = {
+            grade7: [
+                { subject: '地理', day: 1, start: '10:50', end: '11:50' },
+                { subject: '道法', day: 2, start: '10:00', end: '11:00' },
+                { subject: '历史', day: 2, start: '15:00', end: '16:00' },
+                { subject: '生物', day: 3, start: '15:00', end: '16:00' },
+                { subject: '语文', day: 5, start: '08:50', end: '09:50' },
+                { subject: '英语', day: 5, start: '10:00', end: '11:00' },
+                { subject: '数学', day: 5, start: '15:00', end: '16:00' }
+            ],
+            grade8: [
+                { subject: '历史', day: 1, start: '08:50', end: '09:50' },
+                { subject: '生物', day: 1, start: '09:50', end: '10:50' },
+                { subject: '语文', day: 1, start: '14:00', end: '15:00' },
+                { subject: '地理', day: 3, start: '08:50', end: '09:50' },
+                { subject: '物理', day: 3, start: '10:00', end: '11:00' },
+                { subject: '道法', day: 4, start: '09:50', end: '10:50' },
+                { subject: '英语', day: 4, start: '10:50', end: '11:50' },
+                { subject: '数学', day: 4, start: '15:00', end: '16:00' }
+            ]
+        };
+
+        // ---------- 常量 ----------
         const POST_URL = 'https://quickform.cn/api/ck6lpk2kni';
         const GET_ALL_URL = 'https://quickform.cn/api/ck6lpk2kni/all';
         const VALID_USERNAME = 'beike';
         const VALID_PASSWORD = 'beike123';
-        const DELETED_KEYS_STORAGE = 'deleted_booking_keys';
 
-        // --- 状态 ---
+        // ---------- 状态 ----------
         let loggedInUser = null;
-        let allAppointments = [];
-        let validAppointments = [];
-        let editingId = null; // 存储正在编辑的原预约key
+        let allSubmissions = [];
+        let latestUrlMap = new Map();
 
-        // --- DOM 元素 ---
+        // ---------- DOM 元素 ----------
         const loginSection = document.getElementById('loginSection');
         const bookingSection = document.getElementById('bookingSection');
         const loginBtn = document.getElementById('loginBtn');
@@ -136,212 +172,183 @@
         const usernameInp = document.getElementById('username');
         const passwordInp = document.getElementById('password');
         const schoolName = document.getElementById('schoolName');
-        const grade = document.getElementById('grade');
-        const subject = document.getElementById('subject');
-        const startTime = document.getElementById('startTime');
-        const endTime = document.getElementById('endTime');
-        const url = document.getElementById('url');
+        const urlInput = document.getElementById('url');
         const submitBtn = document.getElementById('submitBooking');
         const navButton = document.getElementById('navButton');
-        const appointmentList = document.getElementById('appointmentList');
-        const appointmentCount = document.getElementById('appointmentCount');
+        const activityList = document.getElementById('activityList');
+        const todayWeekdaySpan = document.getElementById('todayWeekday');
+        const currentTargetHint = document.getElementById('currentTargetHint');
+        const currentGrade = document.getElementById('currentGrade');
+        const currentSubject = document.getElementById('currentSubject');
+        const currentStart = document.getElementById('currentStart');
+        const currentEnd = document.getElementById('currentEnd');
 
-        // --- 工具函数：生成预约的唯一键（基于内容）---
-        function getAppointmentKey(apt) {
-            return btoa(unescape(encodeURIComponent(
-                apt.schoolName + '|' + 
-                apt.grade + '|' + 
-                apt.subject + '|' + 
-                apt.startTime + '|' + 
-                apt.endTime + '|' + 
-                apt.url
-            )));
+        // ---------- 辅助函数 ----------
+        function getChineseWeekday() {
+            const d = new Date();
+            let day = d.getDay();
+            if (day === 0) day = 7;
+            return day;
         }
 
-        // --- 管理已删除预约的键 (localStorage) ---
-        function getDeletedKeys() {
-            const keys = localStorage.getItem(DELETED_KEYS_STORAGE);
-            return keys ? JSON.parse(keys) : [];
-        }
-
-        function addDeletedKey(key) {
-            const keys = getDeletedKeys();
-            if (!keys.includes(key)) {
-                keys.push(key);
-                localStorage.setItem(DELETED_KEYS_STORAGE, JSON.stringify(keys));
-            }
-        }
-
-        function removeDeletedKey(key) {
-            const keys = getDeletedKeys().filter(k => k !== key);
-            localStorage.setItem(DELETED_KEYS_STORAGE, JSON.stringify(keys));
-        }
-
-        // --- 辅助函数：取整到最近5分钟 ---
-        function roundToNearestFiveMinutes(date) {
-            const minutes = date.getMinutes();
-            const remainder = minutes % 5;
-            if (remainder < 2.5) {
-                date.setMinutes(minutes - remainder);
-            } else {
-                date.setMinutes(minutes + (5 - remainder));
-            }
-            date.setSeconds(0);
-            date.setMilliseconds(0);
-            return date;
-        }
-
-        // --- 设置默认时间 ---
-        function setDefaultTimes() {
+        function getFullDateTime(dayOfWeek, timeStr) {
             const now = new Date();
-            const start = roundToNearestFiveMinutes(now);
-            const year = start.getFullYear();
-            const month = String(start.getMonth() + 1).padStart(2, '0');
-            const day = String(start.getDate()).padStart(2, '0');
-            const hours = String(start.getHours()).padStart(2, '0');
-            const minutes = String(start.getMinutes()).padStart(2, '0');
-            startTime.value = `${year}-${month}-${day}T${hours}:${minutes}`;
-
-            const end = new Date(start.getTime() + 45 * 60000);
-            const endRounded = roundToNearestFiveMinutes(end);
-            const endYear = endRounded.getFullYear();
-            const endMonth = String(endRounded.getMonth() + 1).padStart(2, '0');
-            const endDay = String(endRounded.getDate()).padStart(2, '0');
-            const endHours = String(endRounded.getHours()).padStart(2, '0');
-            const endMinutes = String(endRounded.getMinutes()).padStart(2, '0');
-            endTime.value = `${endYear}-${endMonth}-${endDay}T${endHours}:${endMinutes}`;
-        }
-        setDefaultTimes();
-
-        // --- 登录验证 ---
-        function checkLogin() {
-            const username = usernameInp.value.trim();
-            const password = passwordInp.value.trim();
-            if (username === VALID_USERNAME && password === VALID_PASSWORD) {
-                loggedInUser = { username: username };
-                loginSection.style.display = 'none';
-                bookingSection.style.display = 'block';
-                renderAppointments();
-            } else {
-                alert('用户名或密码错误（正确为 beike/beike123）');
-            }
+            const currentDay = now.getDay();
+            let targetDay = dayOfWeek;
+            if (targetDay === 7) targetDay = 0;
+            let diff = targetDay - currentDay;
+            const targetDate = new Date(now);
+            targetDate.setDate(now.getDate() + diff);
+            const [hours, minutes] = timeStr.split(':').map(Number);
+            targetDate.setHours(hours, minutes, 0, 0);
+            const year = targetDate.getFullYear();
+            const month = String(targetDate.getMonth() + 1).padStart(2, '0');
+            const day = String(targetDate.getDate()).padStart(2, '0');
+            const hour = String(targetDate.getHours()).padStart(2, '0');
+            const minute = String(targetDate.getMinutes()).padStart(2, '0');
+            return `${year}-${month}-${day}T${hour}:${minute}`;
         }
 
-        function logout() {
-            loggedInUser = null;
-            editingId = null;
-            loginSection.style.display = 'block';
-            bookingSection.style.display = 'none';
-            renderAppointments();
-        }
-
-        // --- 过滤过期、已删除并排序 ---
-        function filterAndSortAppointments(appointments) {
-            const now = new Date();
-            const deletedKeys = getDeletedKeys();
-            const valid = appointments.filter(apt => {
-                if (!apt.endTime) return false;
-                const end = new Date(apt.endTime);
-                return end > now && !deletedKeys.includes(getAppointmentKey(apt));
+        function getTodayActivities() {
+            const today = getChineseWeekday();
+            const activities = [];
+            schedule.grade7.forEach(item => {
+                if (item.day === today) {
+                    activities.push({
+                        grade: '七年级',
+                        subject: item.subject,
+                        startTime: getFullDateTime(item.day, item.start),
+                        endTime: getFullDateTime(item.day, item.end),
+                        displayTime: `${item.start} - ${item.end}`
+                    });
+                }
             });
-            valid.sort((a, b) => (a.startTime || '').localeCompare(b.startTime || ''));
-            return valid;
+            schedule.grade8.forEach(item => {
+                if (item.day === today) {
+                    activities.push({
+                        grade: '八年级',
+                        subject: item.subject,
+                        startTime: getFullDateTime(item.day, item.start),
+                        endTime: getFullDateTime(item.day, item.end),
+                        displayTime: `${item.start} - ${item.end}`
+                    });
+                }
+            });
+            return activities;
         }
 
-        // --- 渲染预约列表 ---
-        function renderAppointments() {
-            if (validAppointments.length === 0) {
-                appointmentList.innerHTML = '<li class="empty-message">📭 暂无进行中的备课，请等待主备提交</li>';
-                navButton.classList.add('disabled');
-                navButton.removeAttribute('href');
-                navButton.innerHTML = '进入集体备课 (暂无)';
-                appointmentCount.innerText = '(0)';
-                return;
-            }
+        function isActivityExpired(endTimeStr) {
+            const now = new Date();
+            const end = new Date(endTimeStr);
+            return end < now;
+        }
+
+        function buildLatestUrlMap() {
+            const map = new Map();
+            allSubmissions.forEach(sub => {
+                const key = `${sub.grade}|${sub.subject}`;
+                const existing = map.get(key);
+                if (!existing || (sub.submitAt && sub.submitAt > existing.submitAt)) {
+                    map.set(key, sub);
+                }
+            });
+            latestUrlMap = map;
+        }
+
+        function renderActivities() {
+            const allToday = getTodayActivities();
+            const active = allToday.filter(act => !isActivityExpired(act.endTime));
+            const expired = allToday.filter(act => isActivityExpired(act.endTime));
+            active.sort((a,b) => a.startTime.localeCompare(b.startTime));
+            expired.sort((a,b) => a.startTime.localeCompare(b.startTime));
+
+            const weekdays = ['', '一', '二', '三', '四', '五', '六', '日'];
+            todayWeekdaySpan.textContent = `星期${weekdays[getChineseWeekday()]}`;
 
             let htmlStr = '';
-            validAppointments.forEach((apt, index) => {
-                const start = (apt.startTime || '').replace('T', ' ');
-                const end = (apt.endTime || '').replace('T', ' ');
-                const teacherInfo = apt.encrypted_teacher ? 
-                    `<span style="font-size:0.8rem; color:#4a6a8a;"><i class="fas fa-user-lock"></i> 提交人(加密): ${apt.encrypted_teacher}</span>` : '';
-                
-                const actionButtons = loggedInUser ? `
-                    <div class="action-buttons">
-                        <button class="edit-btn" data-key="${getAppointmentKey(apt)}"><i class="fas fa-edit"></i> 修改</button>
-                        <button class="delete-btn" data-key="${getAppointmentKey(apt)}"><i class="fas fa-trash"></i> 删除</button>
-                    </div>
-                ` : '';
 
-                htmlStr += `
-                    <li>
-                        <div class="appointment-header">
-                            <span class="badge">#${index+1}</span>
-                            <strong>${apt.schoolName || '?'}</strong>
-                            ${actionButtons}
-                        </div>
-                        <div class="appointment-detail">
-                            <span><i class="fas fa-layer-group"></i> ${apt.grade || '—'}</span>
-                            <span><i class="fas fa-flask"></i> ${apt.subject || '—'}</span>
-                            <span><i class="fas fa-clock"></i> ${start} ~ ${end.split(' ')[1] || ''}</span>
-                        </div>
-                        <div class="appointment-url">
-                            <i class="fas fa-link"></i> <a href="${apt.url}" target="_blank">${apt.url}</a>
-                        </div>
-                        ${teacherInfo}
-                    </li>
-                `;
+            if (active.length > 0) {
+                active.forEach(act => {
+                    htmlStr += renderActivityItem(act, false);
+                });
+            } else {
+                htmlStr += '<li class="empty-message">暂无进行中的备课</li>';
+            }
+
+            if (expired.length > 0) {
+                htmlStr += `<li class="section-divider"><i class="fas fa-history"></i> 已结束</li>`;
+                expired.forEach(act => {
+                    htmlStr += renderActivityItem(act, true);
+                });
+            }
+
+            activityList.innerHTML = htmlStr;
+
+            const firstActiveWithUrl = active.find(act => {
+                const key = `${act.grade}|${act.subject}`;
+                return latestUrlMap.has(key);
             });
-            appointmentList.innerHTML = htmlStr;
-            appointmentCount.innerText = `(${validAppointments.length})`;
-
-            // 更新导航按钮
-            const firstUrl = validAppointments[0]?.url;
-            if (firstUrl) {
-                navButton.href = firstUrl;
+            if (firstActiveWithUrl) {
+                const key = `${firstActiveWithUrl.grade}|${firstActiveWithUrl.subject}`;
+                navButton.href = latestUrlMap.get(key).url;
                 navButton.classList.remove('disabled');
-                navButton.innerHTML = `进入集体备课 <i class="fas fa-arrow-up-right-from-square"></i>`;
+                navButton.innerHTML = `进入备课 <i class="fas fa-arrow-up-right-from-square"></i>`;
             } else {
                 navButton.classList.add('disabled');
                 navButton.removeAttribute('href');
-                navButton.innerHTML = '进入集体备课 (暂无)';
+                navButton.innerHTML = '进入备课 (暂无)';
             }
 
-            // 绑定编辑/删除事件 (仅登录用户可见)
             if (loggedInUser) {
-                document.querySelectorAll('.edit-btn').forEach(btn => {
+                document.querySelectorAll('.set-btn:not(.expired)').forEach(btn => {
                     btn.addEventListener('click', (e) => {
-                        const key = e.currentTarget.dataset.key;
-                        const apt = allAppointments.find(a => getAppointmentKey(a) === key);
-                        if (apt) {
-                            schoolName.value = apt.schoolName || '';
-                            grade.value = apt.grade || '';
-                            subject.value = apt.subject || '';
-                            if (apt.startTime) startTime.value = apt.startTime.slice(0,16);
-                            if (apt.endTime) endTime.value = apt.endTime.slice(0,16);
-                            url.value = apt.url || '';
-                            editingId = key; // 记录原预约key
-                            alert('请在左边修改后重新提交。提交后旧版本将自动隐藏。');
-                        }
-                    });
-                });
-
-                document.querySelectorAll('.delete-btn').forEach(btn => {
-                    btn.addEventListener('click', (e) => {
-                        const key = e.currentTarget.dataset.key;
-                        if (confirm('确定要删除该预约吗？此操作将在本地永久隐藏，刷新后不再出现。')) {
-                            addDeletedKey(key);
-                            validAppointments = filterAndSortAppointments(allAppointments);
-                            renderAppointments();
-                            if (editingId === key) editingId = null;
-                        }
+                        const grade = e.target.dataset.grade;
+                        const subject = e.target.dataset.subject;
+                        const start = e.target.dataset.start;
+                        const end = e.target.dataset.end;
+                        currentGrade.value = grade;
+                        currentSubject.value = subject;
+                        currentStart.value = start;
+                        currentEnd.value = end;
+                        currentTargetHint.innerHTML = `<i class="fas fa-bullseye"></i> 正在为 <strong>${grade} · ${subject}</strong> 设置网址`;
+                        urlInput.value = '';
+                        schoolName.value = '';
                     });
                 });
             }
         }
 
-        // --- 从接口获取预约数据 ---
-        async function fetchAppointments() {
+        function renderActivityItem(act, isExpired) {
+            const key = `${act.grade}|${act.subject}`;
+            const latest = latestUrlMap.get(key);
+            const url = latest ? latest.url : '';
+            const urlDisplay = url ? `<a href="${url}" target="_blank" class="url-link">${url}</a>` : '未设置';
+
+            let setButton = '';
+            if (loggedInUser && !isExpired) {
+                setButton = `<button class="set-btn" data-grade="${act.grade}" data-subject="${act.subject}" data-start="${act.startTime}" data-end="${act.endTime}"><i class="fas fa-link"></i> 设置</button>`;
+            }
+
+            const expiredLabel = isExpired ? '<span class="expired-label">已结束</span>' : '';
+            const itemClass = isExpired ? 'activity-item expired' : 'activity-item';
+
+            return `
+                <li class="${itemClass}">
+                    <div class="activity-header">
+                        <span class="badge">${act.grade}</span>
+                        <span class="badge subject">${act.subject}</span>
+                        <span class="badge time">${act.displayTime}</span>
+                        ${expiredLabel}
+                        ${setButton}
+                    </div>
+                    <div class="activity-url">
+                        <i class="fas fa-globe"></i> 当前网址：${urlDisplay}
+                    </div>
+                </li>
+            `;
+        }
+
+        async function fetchSubmissions() {
             try {
                 const response = await fetch(GET_ALL_URL, {
                     method: 'GET',
@@ -350,61 +357,49 @@
                 if (!response.ok) throw new Error('网络异常');
                 const data = await response.json();
                 const submissions = data.submissions || [];
-                
-                allAppointments = submissions.map((item) => ({
+                allSubmissions = submissions.map(item => ({
                     schoolName: item.schoolName || '',
                     grade: item.grade || '',
                     subject: item.subject || '',
                     startTime: item.startTime || '',
                     endTime: item.endTime || '',
                     url: item.url || '',
-                    encrypted_teacher: item.encrypted_teacher || ''
+                    submitAt: item.submitAt || item.submitted_at || new Date().toISOString()
                 }));
             } catch (e) {
-                console.warn('获取预约失败，使用空数据', e);
-                allAppointments = [];
+                console.warn('获取提交失败', e);
+                allSubmissions = [];
             }
-
-            validAppointments = filterAndSortAppointments(allAppointments);
-            renderAppointments();
+            buildLatestUrlMap();
+            renderActivities();
         }
 
-        // --- 提交新预约 ---
-        async function submitNewBooking() {
+        async function submitUrl() {
             if (!loggedInUser) {
                 alert('请先登录');
                 return;
             }
-
-            if (!schoolName.value || !grade.value || !subject.value || !startTime.value || !endTime.value || !url.value) {
-                alert('请完整填写所有字段');
+            if (!currentGrade.value || !currentSubject.value || !currentStart.value || !currentEnd.value) {
+                alert('请先从右侧选择一个年级学科，点击“设置”按钮。');
                 return;
             }
-
-            // 构造临时预约对象用于计算key
-            const tempApt = {
-                schoolName: schoolName.value,
-                grade: grade.value,
-                subject: subject.value,
-                startTime: startTime.value,
-                endTime: endTime.value,
-                url: url.value
-            };
-            const newKey = getAppointmentKey(tempApt);
-
-            // 如果是编辑模式，检查内容是否真的修改了
-            if (editingId && newKey === editingId) {
-                alert('您没有修改任何内容，无需提交。');
+            if (isActivityExpired(currentEnd.value)) {
+                alert('该时段备课已结束，无法设置网址。');
                 return;
             }
-
-            const encryptedTeacher = btoa(loggedInUser.username);
+            if (!urlInput.value.trim()) {
+                alert('请输入备课网址');
+                return;
+            }
             const payload = {
-                ...tempApt,
-                encrypted_teacher: encryptedTeacher,
+                schoolName: schoolName.value.trim(),
+                grade: currentGrade.value,
+                subject: currentSubject.value,
+                startTime: currentStart.value,
+                endTime: currentEnd.value,
+                url: urlInput.value.trim(),
                 submitAt: new Date().toISOString()
             };
-
             try {
                 const response = await fetch(POST_URL, {
                     method: 'POST',
@@ -412,39 +407,45 @@
                     body: JSON.stringify(payload)
                 });
                 if (!response.ok) throw new Error('提交失败');
-                
-                alert('预约提交成功！加密后的用户名已附加在请求中。');
-                
-                // 如果是编辑模式，将原预约加入黑名单（隐藏旧版本）
-                if (editingId) {
-                    addDeletedKey(editingId);
-                    editingId = null;
-                }
-                
-                // 重新获取最新数据
-                await fetchAppointments();
-                
+                alert('网址设置成功！');
+                await fetchSubmissions();
             } catch (err) {
-                console.error('提交出错:', err);
-                alert('提交失败，请检查网络或接口。');
+                console.error('提交出错', err);
+                alert('提交失败，请检查网络或稍后重试');
             }
         }
 
-        // --- 事件绑定 ---
+        function checkLogin() {
+            const username = usernameInp.value.trim();
+            const password = passwordInp.value.trim();
+            if (username === VALID_USERNAME && password === VALID_PASSWORD) {
+                loggedInUser = { username };
+                loginSection.style.display = 'none';
+                bookingSection.style.display = 'block';
+                renderActivities();
+            } else {
+                alert('用户名或密码错误（正确为 beike/beike123）');
+            }
+        }
+
+        function logout() {
+            loggedInUser = null;
+            loginSection.style.display = 'block';
+            bookingSection.style.display = 'none';
+            currentGrade.value = ''; currentSubject.value = ''; currentStart.value = ''; currentEnd.value = '';
+            currentTargetHint.innerHTML = '<i class="fas fa-info-circle"></i> 请从右侧选择要设置的年级学科';
+            renderActivities();
+        }
+
         loginBtn.addEventListener('click', checkLogin);
         logoutBtn.addEventListener('click', logout);
-        submitBtn.addEventListener('click', submitNewBooking);
-
-        // 初始化获取数据
-        fetchAppointments();
-
-        // 定时刷新 (每30秒)
-        setInterval(fetchAppointments, 30000);
-
-        // 按回车快速登录
+        submitBtn.addEventListener('click', submitUrl);
         passwordInp.addEventListener('keypress', (e) => {
-            if(e.key === 'Enter') checkLogin();
+            if (e.key === 'Enter') checkLogin();
         });
+
+        fetchSubmissions();
+        setInterval(fetchSubmissions, 30000);
     })();
 </script>
 </body>
