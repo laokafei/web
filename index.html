@@ -35,8 +35,13 @@
         .activity-url { display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap; font-size:0.85rem; background:rgba(255,255,255,0.5); padding:0.4rem 0.8rem; border-radius:30px; }
         .url-link { word-break:break-all; color:#1e5a88; text-decoration:none; }
         .url-link:hover { text-decoration:underline; }
-        .set-btn { background:#208f6e; color:white; border:none; border-radius:30px; padding:0.4rem 1rem; font-size:0.8rem; cursor:pointer; border:1px solid white; margin-left:auto; }
-        .set-btn:hover { background:#1a7a5b; }
+        .edit-btn { background:#208f6e; color:white; border:none; border-radius:30px; padding:0.4rem 1rem; font-size:0.8rem; cursor:pointer; border:1px solid white; margin-left:auto; }
+        .edit-btn:hover { background:#1a7a5b; }
+        .inline-form { display:flex; flex-wrap:wrap; gap:0.5rem; align-items:center; margin-top:0.3rem; }
+        .inline-input { flex:1; min-width:150px; padding:0.5rem 1rem; border-radius:30px; border:none; background:rgba(255,255,255,0.9); font-size:0.85rem; outline:none; border:1px solid rgba(255,255,255,0.8); }
+        .inline-input:focus { border-color:#2b6fa8; box-shadow:0 0 0 3px rgba(55,125,200,0.2); }
+        .inline-submit { background:#208f6e; color:white; border:none; border-radius:30px; padding:0.5rem 1.2rem; font-size:0.85rem; cursor:pointer; border:1px solid white; }
+        .inline-submit:hover { background:#1a7a5b; }
         .empty-message { color:#3b5d7a; font-style:italic; text-align:center; padding:2rem 0; }
         .section-divider { margin:0.5rem 0 0.2rem; font-size:0.9rem; color:#1a4d73; font-weight:600; border-bottom:1px dashed rgba(255,255,255,0.6); padding-bottom:0.2rem; }
 
@@ -159,12 +164,20 @@
                 font-size: 0.65rem;
                 padding: 0.15rem 0.6rem;
             }
-            .set-btn {
+            .edit-btn {
                 font-size: 0.75rem;
                 padding: 0.3rem 0.8rem;
             }
             .activity-url {
                 font-size: 0.75rem;
+            }
+            .inline-input {
+                font-size: 0.8rem;
+                padding: 0.4rem 0.8rem;
+            }
+            .inline-submit {
+                font-size: 0.8rem;
+                padding: 0.4rem 1rem;
             }
         }
 
@@ -189,7 +202,7 @@
                 font-size: 0.6rem;
                 padding: 0.1rem 0.5rem;
             }
-            .set-btn {
+            .edit-btn {
                 font-size: 0.7rem;
                 padding: 0.25rem 0.7rem;
             }
@@ -216,7 +229,7 @@
     <div class="title-row">
         <h1>⛵ 东台市城乡一体化集体备课 · 每日安排</h1>
     </div>
-    <!-- 右侧区域（原参备单位区域）占满 -->
+    <!-- 右侧区域占满 -->
     <div class="assist-team">
         <div class="section-title"><i class="fas fa-door-open"></i> 集体备课入口</div>
         <div class="quick-nav">
@@ -231,21 +244,17 @@
     </div>
 </div>
 
-<!-- 模态框 -->
+<!-- 模态框（用于修改已有网址，输入为空则清空网址） -->
 <div class="modal-overlay" id="modalOverlay">
     <div class="modal-card">
-        <h3><i class="fas fa-link"></i> 设置网址</h3>
+        <h3><i class="fas fa-link"></i> 修改网址</h3>
         <div class="modal-input">
-            <label>主备单位 <span style="font-weight:400;">(可留空)</span></label>
-            <input type="text" id="modalSchoolName" placeholder="例如：实验中学">
-        </div>
-        <div class="modal-input">
-            <label>备课网址 <span style="color:#b13e3e;">*必填</span></label>
-            <input type="url" id="modalUrl" placeholder="https://example.com" required>
+            <label>备课网址 <span style="font-weight:400;">(留空则清空当前网址)</span></label>
+            <input type="url" id="modalUrl" placeholder="https://example.com">
         </div>
         <div class="modal-buttons">
             <button class="modal-btn cancel" id="modalCancel">取消</button>
-            <button class="modal-btn submit" id="modalSubmit">提交</button>
+            <button class="modal-btn submit" id="modalSubmit">确定</button>
         </div>
     </div>
 </div>
@@ -278,11 +287,12 @@
         // ---------- 常量 ----------
         const POST_URL = 'https://quickform.cn/api/ck6lpk2kni';
         const GET_ALL_URL = 'https://quickform.cn/api/ck6lpk2kni/all';
+        const DELETED_KEYS_STORAGE = 'deleted_booking_keys'; // 用于存储被清空网址的活动key
 
         // ---------- 状态 ----------
         let allSubmissions = [];
         let latestUrlMap = new Map(); // 键: "年级|学科" -> 最新提交对象
-        let currentEditingActivity = null; // 存储当前点击的活动信息
+        let currentEditingActivity = null; // 存储当前点击的活动信息（用于模态框）
 
         // ---------- DOM 元素 ----------
         const navButton = document.getElementById('navButton');
@@ -291,7 +301,6 @@
 
         // 模态框元素
         const modalOverlay = document.getElementById('modalOverlay');
-        const modalSchoolName = document.getElementById('modalSchoolName');
         const modalUrl = document.getElementById('modalUrl');
         const modalCancel = document.getElementById('modalCancel');
         const modalSubmit = document.getElementById('modalSubmit');
@@ -356,10 +365,38 @@
             return end < now;
         }
 
+        // 管理被清空网址的活动key (localStorage)
+        function getDeletedKeys() {
+            const keys = localStorage.getItem(DELETED_KEYS_STORAGE);
+            return keys ? JSON.parse(keys) : [];
+        }
+
+        function addDeletedKey(key) {
+            const keys = getDeletedKeys();
+            if (!keys.includes(key)) {
+                keys.push(key);
+                localStorage.setItem(DELETED_KEYS_STORAGE, JSON.stringify(keys));
+            }
+        }
+
+        function removeDeletedKey(key) {
+            const keys = getDeletedKeys().filter(k => k !== key);
+            localStorage.setItem(DELETED_KEYS_STORAGE, JSON.stringify(keys));
+        }
+
+        // 生成活动的唯一键
+        function getActivityKey(grade, subject) {
+            return `${grade}|${subject}`;
+        }
+
+        // 构建最新网址映射（忽略被清空的）
         function buildLatestUrlMap() {
             const map = new Map();
+            const deletedKeys = getDeletedKeys();
             allSubmissions.forEach(sub => {
                 const key = `${sub.grade}|${sub.subject}`;
+                // 如果该key被清空过，则忽略
+                if (deletedKeys.includes(key)) return;
                 const existing = map.get(key);
                 if (!existing || (sub.submitAt && sub.submitAt > existing.submitAt)) {
                     map.set(key, sub);
@@ -368,11 +405,10 @@
             latestUrlMap = map;
         }
 
-        // 打开模态框
-        function openModal(activity) {
+        // 打开模态框（用于修改已有网址）
+        function openModal(activity, currentUrl) {
             currentEditingActivity = activity;
-            modalSchoolName.value = ''; // 清空之前输入
-            modalUrl.value = '';
+            modalUrl.value = currentUrl || '';
             modalOverlay.style.display = 'flex';
         }
 
@@ -382,21 +418,27 @@
             currentEditingActivity = null;
         }
 
-        // 提交模态框
+        // 提交模态框修改（如果输入为空则清空网址）
         async function submitModal() {
             if (!currentEditingActivity) {
-                alert('请先选择活动');
                 closeModal();
                 return;
             }
             const url = modalUrl.value.trim();
+            const key = getActivityKey(currentEditingActivity.grade, currentEditingActivity.subject);
+
             if (!url) {
-                alert('请输入备课网址');
+                // 清空网址：加入黑名单，并重新构建映射
+                addDeletedKey(key);
+                // 重新构建映射（会忽略被清空的）
+                buildLatestUrlMap();
+                renderActivities();
+                closeModal();
                 return;
             }
 
+            // 有输入，则提交新网址
             const payload = {
-                schoolName: modalSchoolName.value.trim(), // 可留空
                 grade: currentEditingActivity.grade,
                 subject: currentEditingActivity.subject,
                 startTime: currentEditingActivity.startTime,
@@ -412,8 +454,46 @@
                     body: JSON.stringify(payload)
                 });
                 if (!response.ok) throw new Error('提交失败');
-                alert('网址设置成功！');
+                alert('网址修改成功！');
+                // 如果之前该key在黑名单中，需要移除（因为现在有了新网址）
+                removeDeletedKey(key);
                 closeModal();
+                await fetchSubmissions(); // 刷新列表
+            } catch (err) {
+                console.error('提交出错', err);
+                alert('提交失败，请检查网络或稍后重试');
+            }
+        }
+
+        // 提交内联表单（首次设置网址）
+        async function submitInline(grade, subject, startTime, endTime, inputElement) {
+            const url = inputElement.value.trim();
+            if (!url) {
+                alert('请输入网址');
+                return;
+            }
+
+            const key = getActivityKey(grade, subject);
+
+            const payload = {
+                grade: grade,
+                subject: subject,
+                startTime: startTime,
+                endTime: endTime,
+                url: url,
+                submitAt: new Date().toISOString()
+            };
+
+            try {
+                const response = await fetch(POST_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (!response.ok) throw new Error('提交失败');
+                alert('网址设置成功！');
+                // 如果之前该key在黑名单中，需要移除
+                removeDeletedKey(key);
                 await fetchSubmissions(); // 刷新列表
             } catch (err) {
                 console.error('提交出错', err);
@@ -467,49 +547,91 @@
                 navButton.innerHTML = '进入备课 (暂无)';
             }
 
-            // 为所有“设置网址”按钮绑定事件（只有未过期活动才有按钮）
-            document.querySelectorAll('.set-btn').forEach(btn => {
+            // 为“修改网址”按钮绑定事件（用于修改已有网址）
+            document.querySelectorAll('.edit-btn').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     const grade = e.target.dataset.grade;
                     const subject = e.target.dataset.subject;
                     const start = e.target.dataset.start;
                     const end = e.target.dataset.end;
-                    // 找到对应的活动对象（可以从active中找，但直接用传入的数据构建）
+                    const key = `${grade}|${subject}`;
+                    const currentUrl = latestUrlMap.get(key)?.url || '';
                     const activity = { grade, subject, startTime: start, endTime: end };
-                    openModal(activity);
+                    openModal(activity, currentUrl);
+                });
+            });
+
+            // 为内联“提交”按钮绑定事件（用于首次设置网址）
+            document.querySelectorAll('.inline-submit').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const grade = e.target.dataset.grade;
+                    const subject = e.target.dataset.subject;
+                    const start = e.target.dataset.start;
+                    const end = e.target.dataset.end;
+                    const input = e.target.parentElement.querySelector('.inline-input');
+                    if (input) {
+                        submitInline(grade, subject, start, end, input);
+                    }
                 });
             });
         }
 
+        // 根据是否有网址渲染不同的卡片内容
         function renderActivityItem(act, isExpired) {
             const key = `${act.grade}|${act.subject}`;
             const latest = latestUrlMap.get(key);
             const url = latest ? latest.url : '';
-            const urlDisplay = url ? `<a href="${url}" target="_blank" class="url-link">${url}</a>` : '未设置';
 
-            // 未过期活动才显示“设置网址”按钮
-            let setButton = '';
-            if (!isExpired) {
-                setButton = `<button class="set-btn" data-grade="${act.grade}" data-subject="${act.subject}" data-start="${act.startTime}" data-end="${act.endTime}"><i class="fas fa-link"></i> 设置网址</button>`;
+            if (isExpired) {
+                // 已过期活动：只显示信息，不显示任何按钮或表单
+                const urlDisplay = url ? `<a href="${url}" target="_blank" class="url-link">${url}</a>` : '未设置';
+                return `
+                    <li class="activity-item expired">
+                        <div class="activity-header">
+                            <span class="badge">${act.grade}</span>
+                            <span class="badge subject">${act.subject}</span>
+                            <span class="badge time">${act.displayTime}</span>
+                            <span class="expired-label">已结束</span>
+                        </div>
+                        <div class="activity-url">
+                            <i class="fas fa-globe"></i> 当前网址：${urlDisplay}
+                        </div>
+                    </li>
+                `;
+            } else {
+                // 未过期活动：根据是否有网址显示不同内容
+                if (url) {
+                    // 有网址：显示链接和“修改网址”按钮
+                    return `
+                        <li class="activity-item">
+                            <div class="activity-header">
+                                <span class="badge">${act.grade}</span>
+                                <span class="badge subject">${act.subject}</span>
+                                <span class="badge time">${act.displayTime}</span>
+                                <button class="edit-btn" data-grade="${act.grade}" data-subject="${act.subject}" data-start="${act.startTime}" data-end="${act.endTime}"><i class="fas fa-edit"></i> 修改网址</button>
+                            </div>
+                            <div class="activity-url">
+                                <i class="fas fa-globe"></i> 当前网址：<a href="${url}" target="_blank" class="url-link">${url}</a>
+                            </div>
+                        </li>
+                    `;
+                } else {
+                    // 无网址：显示输入框和“提交”按钮
+                    return `
+                        <li class="activity-item">
+                            <div class="activity-header">
+                                <span class="badge">${act.grade}</span>
+                                <span class="badge subject">${act.subject}</span>
+                                <span class="badge time">${act.displayTime}</span>
+                            </div>
+                            <div class="inline-form">
+                                <input type="url" class="inline-input" placeholder="输入备课网址" value="">
+                                <button class="inline-submit" data-grade="${act.grade}" data-subject="${act.subject}" data-start="${act.startTime}" data-end="${act.endTime}">提交</button>
+                            </div>
+                        </li>
+                    `;
+                }
             }
-
-            const expiredLabel = isExpired ? '<span class="expired-label">已结束</span>' : '';
-            const itemClass = isExpired ? 'activity-item expired' : 'activity-item';
-
-            return `
-                <li class="${itemClass}">
-                    <div class="activity-header">
-                        <span class="badge">${act.grade}</span>
-                        <span class="badge subject">${act.subject}</span>
-                        <span class="badge time">${act.displayTime}</span>
-                        ${expiredLabel}
-                        ${setButton}
-                    </div>
-                    <div class="activity-url">
-                        <i class="fas fa-globe"></i> 当前网址：${urlDisplay}
-                    </div>
-                </li>
-            `;
         }
 
         // 从接口获取数据
@@ -542,7 +664,6 @@
         // 模态框事件
         modalCancel.addEventListener('click', closeModal);
         modalSubmit.addEventListener('click', submitModal);
-        // 点击遮罩层关闭（可选）
         modalOverlay.addEventListener('click', (e) => {
             if (e.target === modalOverlay) closeModal();
         });
